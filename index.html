@@ -16,6 +16,13 @@
       <button class="sidebar-close" id="sidebarClose" aria-label="Fermer le menu">×</button>
       <a class="brand" href="#overview" aria-label="Clair, accueil"><span class="brand-mark">+</span><span>clair<span class="brand-dot">.</span></span></a>
       <div class="sidebar-label">Espace budget</div>
+      <div class="mode-selector" aria-label="Mode de budget">
+        <div class="mode-label">Mode de gestion</div>
+        <div class="mode-options" role="group" aria-label="Choisir le mode de gestion">
+          <button class="mode-option" id="soloModeButton" type="button" data-mode="solo">Seul</button>
+          <button class="mode-option" id="coupleModeButton" type="button" data-mode="couple">À deux</button>
+        </div>
+      </div>
       <nav class="main-nav" aria-label="Navigation principale">
         <a class="nav-link active" href="#overview"><span class="nav-icon">◈</span>Vue d’ensemble</a>
         <a class="nav-link" href="#budgets"><span class="nav-icon">◫</span>Enveloppes</a>
@@ -37,7 +44,7 @@
       <section class="welcome-row"><div><p class="eyebrow">SUIVI MENSUEL <span class="live-dot"></span></p><h1>Bonjour<span class="title-dot">,</span></h1><p class="subline">Votre budget est sur la bonne voie. Voici où vous en êtes.</p></div></section>
 
       <section class="hero-grid" aria-label="Résumé du budget">
-        <article class="balance-card"><div class="card-top"><span class="eyebrow light">VOTRE PART DU RESTE À VIVRE</span><span class="status-pill"><span></span> En bonne voie</span></div><div class="balance-amount" id="remainingAmount">1 030,00 €</div><p>Votre part après les charges communes</p><div class="balance-footer"><div><small>Revenus du foyer</small><strong id="netIncome">4 090,00 €</strong></div><div><small>Charges communes</small><strong id="totalCharges">2 438,00 €</strong></div><div><small>Votre report précédent</small><strong id="carryoverAmount">0,00 €</strong></div></div></article>
+        <article class="balance-card"><div class="card-top"><span class="eyebrow light" id="remainingLabel">VOTRE PART DU RESTE À VIVRE</span><span class="status-pill"><span></span> En bonne voie</span></div><div class="balance-amount" id="remainingAmount">1 030,00 €</div><p id="remainingDescription">Votre part après les charges communes</p><div class="balance-footer"><div><small>Revenus du foyer</small><strong id="netIncome">4 090,00 €</strong></div><div><small>Charges communes</small><strong id="totalCharges">2 438,00 €</strong></div><div><small id="carryoverLabel">Votre report précédent</small><strong id="carryoverAmount">0,00 €</strong></div></div></article>
       </section>
 
       <section class="section-heading" id="budgets"><div><p class="eyebrow">ALLOCATION DU RESTE À VIVRE</p><h2>Vos enveloppes</h2></div><button class="text-btn" id="editBudgetsButton">Modifier les pourcentages <span>→</span></button></section>

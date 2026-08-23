@@ -4,7 +4,7 @@ const monthName = date => new Intl.DateTimeFormat('fr-FR', { month: 'long', year
 const uid = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 const starter = {
-  month: '2025-03', carryover: 0, safety: 1840,
+  month: '2025-03', carryover: 0, safety: 1840, mode: 'couple',
   incomes: [
     { id: uid(), name: 'Esker', amount: 2300, type: 'Salaire' },
     { id: uid(), name: 'Chorales', amount: 200, type: 'Salaire' },
@@ -26,11 +26,13 @@ const starter = {
 };
 let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || starter;
 state.envelopeCarryover = state.envelopeCarryover || {};
+state.mode = state.mode === 'solo' ? 'solo' : 'couple';
 const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 const netIncome = () => state.incomes.reduce((sum, income) => sum + Number(income.amount) * (income.ei ? .7 : 1), 0);
 const totalCharges = () => state.charges.reduce((sum, charge) => sum + Number(charge.amount), 0);
 const remaining = () => netIncome() - totalCharges() + Number(state.carryover || 0);
-const individualRemaining = () => Math.max(0, remaining()) / 2;
+const modeShare = () => state.mode === 'solo' ? 1 : .5;
+const individualRemaining = () => Math.max(0, remaining()) * modeShare();
 const categoryFor = envelope => ({ Perso: 'Dépenses personnelles', Épargne: 'Épargne', Loisirs: 'Loisirs', Tampon: 'Tampon' }[envelope.name] || envelope.name);
 const spentFor = envelope => state.expenses.filter(expense => expense.category === categoryFor(envelope)).reduce((sum, expense) => sum + Number(expense.amount), 0);
 const baseAllocationFor = envelope => individualRemaining() * envelope.percent / 100;
@@ -40,8 +42,13 @@ const get = id => document.getElementById(id);
 function render() {
   const date = new Date(`${state.month}-01T12:00:00`); const label = monthName(date);
   ['sidebarMonth', 'breadcrumbMonth'].forEach(id => get(id).textContent = label);
+  const soloMode = state.mode === 'solo';
+  get('remainingLabel').textContent = soloMode ? 'VOTRE RESTE À VIVRE' : 'VOTRE PART DU RESTE À VIVRE';
+  get('remainingDescription').textContent = soloMode ? 'Disponible après les charges communes' : 'Votre part après les charges communes';
+  get('carryoverLabel').textContent = soloMode ? 'Votre report précédent' : 'Votre report précédent';
+  document.querySelectorAll('.mode-option').forEach(button => button.classList.toggle('active', button.dataset.mode === state.mode));
   get('remainingAmount').textContent = euro(individualRemaining()); get('netIncome').textContent = euro(netIncome());
-  const individualCarryover = Number(state.carryover || 0) / 2 + Object.values(state.envelopeCarryover).reduce((sum, value) => sum + Number(value), 0);
+  const individualCarryover = Number(state.carryover || 0) * modeShare() + Object.values(state.envelopeCarryover).reduce((sum, value) => sum + Number(value), 0);
   get('totalCharges').textContent = euro(totalCharges()); get('carryoverAmount').textContent = euro(individualCarryover);
   get('incomeTotalBottom').textContent = euro(netIncome()); get('chargesTotalBottom').textContent = euro(totalCharges());
   renderEnvelopes(); renderRows('incomeTable', state.incomes, 'income'); renderRows('chargeTable', state.charges, 'charge'); renderExpenses();
@@ -104,6 +111,7 @@ document.addEventListener('click', event => {
   const remove = event.target.closest('[data-delete-expense]'); if (remove) { state.expenses = state.expenses.filter(item => item.id !== remove.dataset.deleteExpense); save(); render(); }
 });
 get('addIncomeButton').onclick = () => openModal('income'); get('addChargeButton').onclick = () => openModal('charge'); get('quickExpenseButton').onclick = () => openModal('expense'); get('editBudgetsButton').onclick = () => openModal('budget'); get('newMonthButton').onclick = () => { closeSidebar(); openModal('month'); }; get('modalClose').onclick = closeModal; get('modalBackdrop').onclick = event => { if (event.target.id === 'modalBackdrop') closeModal(); };
+document.querySelectorAll('.mode-option').forEach(button => button.onclick = () => { state.mode = button.dataset.mode; save(); render(); });
 get('previousMonth').onclick = () => moveMonth(-1); get('nextMonth').onclick = () => moveMonth(1); get('exportButton').onclick = () => { const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `clair-${state.month}.json`; link.click(); URL.revokeObjectURL(link.href); };
 function moveMonth(delta) { const date = new Date(`${state.month}-01T12:00:00`); date.setMonth(date.getMonth() + delta); state.month = date.toISOString().slice(0, 7); save(); render(); }
 render();
