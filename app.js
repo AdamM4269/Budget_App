@@ -43,7 +43,13 @@ function render() {
 }
 function renderEnvelopes() {
   const available = Math.max(0, remaining()) / 2;
-  get('envelopeGrid').innerHTML = state.envelopes.map(item => `<article class="envelope" style="--accent:${item.color}"><div class="envelope-head"><span class="envelope-icon">${item.icon}</span><span class="eyebrow">${item.percent} %</span></div><h3>${item.name}</h3><div class="envelope-amount">${euro(available * item.percent / 100)}</div><div class="envelope-meta">Budget alloué <strong>${item.percent} %</strong></div></article>`).join('');
+  const categories = { Perso: 'Dépenses personnelles', Épargne: 'Épargne', Loisirs: 'Loisirs', Tampon: 'Tampon' };
+  get('envelopeGrid').innerHTML = state.envelopes.map(item => {
+    const allocation = available * item.percent / 100;
+    const spent = state.expenses.filter(expense => expense.category === (categories[item.name] || item.name)).reduce((sum, expense) => sum + Number(expense.amount), 0);
+    const progress = allocation ? spent / allocation * 100 : spent ? 100 : 0;
+    return `<article class="envelope${spent > allocation ? ' over-budget' : ''}" style="--accent:${item.color}"><div class="envelope-head"><span class="envelope-icon">${item.icon}</span><span class="eyebrow">${item.percent} %</span></div><h3>${item.name}</h3><div class="envelope-amount">${euro(allocation)}</div><div class="envelope-progress" aria-label="${euro(spent)} dépensés sur ${euro(allocation)}"><div class="envelope-progress-fill" style="width:${Math.min(100, progress)}%"></div></div><div class="envelope-spent">${euro(spent)} / ${euro(allocation)} <span>dépensé</span></div><div class="envelope-meta">Budget alloué <strong>${item.percent} %</strong></div></article>`;
+  }).join('');
 }
 function renderRows(target, rows, kind) {
   get(target).innerHTML = rows.map(row => `<div class="table-row"><span class="row-name">${row.name}</span><span class="row-tag">${row.ei ? '−30 % EI' : row.type}</span><strong class="row-amount">${euro(row.amount * (row.ei ? .7 : 1))}</strong><button class="row-action" data-edit="${kind}" data-id="${row.id}" aria-label="Modifier ${row.name}">⋮</button></div>`).join('');
