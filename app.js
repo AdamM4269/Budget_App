@@ -29,20 +29,21 @@ const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 const netIncome = () => state.incomes.reduce((sum, income) => sum + Number(income.amount) * (income.ei ? .7 : 1), 0);
 const totalCharges = () => state.charges.reduce((sum, charge) => sum + Number(charge.amount), 0);
 const remaining = () => netIncome() - totalCharges() + Number(state.carryover || 0);
+const individualRemaining = () => Math.max(0, remaining()) / 2;
 const get = id => document.getElementById(id);
 
 function render() {
   const date = new Date(`${state.month}-01T12:00:00`); const label = monthName(date);
   ['sidebarMonth', 'breadcrumbMonth', 'currentMonthLabel'].forEach(id => get(id).textContent = label);
-  get('remainingAmount').textContent = euro(remaining()); get('netIncome').textContent = euro(netIncome());
-  get('totalCharges').textContent = euro(totalCharges()); get('carryoverAmount').textContent = euro(state.carryover);
+  get('remainingAmount').textContent = euro(individualRemaining()); get('netIncome').textContent = euro(netIncome());
+  get('totalCharges').textContent = euro(totalCharges()); get('carryoverAmount').textContent = euro(Number(state.carryover || 0) / 2);
   get('incomeTotalBottom').textContent = euro(netIncome()); get('chargesTotalBottom').textContent = euro(totalCharges());
   get('safetyAmount').textContent = euro(state.safety); get('safetyProgress').style.width = `${Math.min(100, state.safety / 3000 * 100)}%`;
   get('safetyPercent').textContent = `${Math.round(Math.min(100, state.safety / 3000 * 100))} %`;
   renderEnvelopes(); renderRows('incomeTable', state.incomes, 'income'); renderRows('chargeTable', state.charges, 'charge'); renderExpenses();
 }
 function renderEnvelopes() {
-  const available = Math.max(0, remaining()) / 2;
+  const available = individualRemaining();
   const categories = { Perso: 'Dépenses personnelles', Épargne: 'Épargne', Loisirs: 'Loisirs', Tampon: 'Tampon' };
   get('envelopeGrid').innerHTML = state.envelopes.map(item => {
     const allocation = available * item.percent / 100;
