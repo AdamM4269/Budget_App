@@ -42,7 +42,7 @@ function render() {
   renderEnvelopes(); renderRows('incomeTable', state.incomes, 'income'); renderRows('chargeTable', state.charges, 'charge'); renderExpenses();
 }
 function renderEnvelopes() {
-  const available = Math.max(0, remaining());
+  const available = Math.max(0, remaining()) / 2;
   get('envelopeGrid').innerHTML = state.envelopes.map(item => `<article class="envelope" style="--accent:${item.color}"><div class="envelope-head"><span class="envelope-icon">${item.icon}</span><span class="eyebrow">${item.percent} %</span></div><h3>${item.name}</h3><div class="envelope-amount">${euro(available * item.percent / 100)}</div><div class="envelope-meta">Budget alloué <strong>${item.percent} %</strong></div></article>`).join('');
 }
 function renderRows(target, rows, kind) {
