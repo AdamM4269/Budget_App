@@ -12,7 +12,8 @@
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-close" id="sidebarClose" aria-label="Fermer le menu">×</button>
       <a class="brand" href="#overview" aria-label="Clair, accueil"><span class="brand-mark">+</span><span>clair<span class="brand-dot">.</span></span></a>
       <div class="sidebar-label">Espace budget</div>
       <nav class="main-nav" aria-label="Navigation principale">
@@ -28,9 +29,10 @@
         <button class="new-month-btn" id="newMonthButton"><span>＋</span> Nouveau mois</button>
       </div>
     </aside>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
     <main class="main-content" id="overview">
-      <header class="topbar"><div class="breadcrumb">Espace budget <span>/</span> <strong id="breadcrumbMonth">Mars 2025</strong></div><div class="top-actions"><button class="icon-btn" title="Notifications" aria-label="Notifications">♧<i></i></button><button class="primary-btn" id="quickExpenseButton">＋ Ajouter une dépense</button></div></header>
+      <header class="topbar"><button class="menu-toggle" id="menuToggle" aria-label="Ouvrir le menu" aria-expanded="false">☰</button><div class="breadcrumb">Espace budget <span>/</span> <strong id="breadcrumbMonth">Mars 2025</strong></div><div class="top-actions"><button class="icon-btn" title="Notifications" aria-label="Notifications">♧<i></i></button><button class="primary-btn" id="quickExpenseButton">＋ Ajouter une dépense</button></div></header>
 
       <section class="welcome-row"><div><p class="eyebrow">SUIVI MENSUEL <span class="live-dot"></span></p><h1>Bonjour<span class="title-dot">,</span></h1><p class="subline">Votre budget est sur la bonne voie. Voici où vous en êtes.</p></div><div class="date-card"><span>MOIS EN COURS</span><strong id="currentMonthLabel">Mars 2025</strong><small id="lastUpdated">Mis à jour à l’instant</small></div></section>
 

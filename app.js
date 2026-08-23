@@ -91,6 +91,14 @@ function submitModal(type, data) {
 }
 function closeModal() { get('modalBackdrop').hidden = true; }
 
+const sidebar = get('sidebar');
+const menuToggle = get('menuToggle');
+const closeSidebar = () => { sidebar.classList.remove('is-open'); get('sidebarOverlay').classList.remove('is-visible'); menuToggle.setAttribute('aria-expanded', 'false'); };
+menuToggle.onclick = () => { const isOpen = sidebar.classList.toggle('is-open'); get('sidebarOverlay').classList.toggle('is-visible', isOpen); menuToggle.setAttribute('aria-expanded', String(isOpen)); };
+get('sidebarClose').onclick = closeSidebar;
+get('sidebarOverlay').onclick = closeSidebar;
+document.querySelectorAll('.sidebar .nav-link, .sidebar .brand').forEach(link => link.addEventListener('click', closeSidebar));
+
 document.addEventListener('click', event => {
   const edit = event.target.closest('[data-edit]'); if (edit) openModal(edit.dataset.edit, state[edit.dataset.edit === 'income' ? 'incomes' : 'charges'].find(item => item.id === edit.dataset.id));
   const remove = event.target.closest('[data-delete-expense]'); if (remove) { state.expenses = state.expenses.filter(item => item.id !== remove.dataset.deleteExpense); save(); render(); }
