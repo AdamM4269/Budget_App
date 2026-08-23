@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f5f2eb">
+  <title>Clair. | Budget mensuel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#overview" aria-label="Clair, accueil"><span class="brand-mark">+</span><span>clair<span class="brand-dot">.</span></span></a>
+      <div class="sidebar-label">Espace budget</div>
+      <nav class="main-nav" aria-label="Navigation principale">
+        <a class="nav-link active" href="#overview"><span class="nav-icon">◈</span>Vue d’ensemble</a>
+        <a class="nav-link" href="#revenus"><span class="nav-icon">↗</span>Revenus</a>
+        <a class="nav-link" href="#charges"><span class="nav-icon">−</span>Charges</a>
+        <a class="nav-link" href="#budgets"><span class="nav-icon">◫</span>Enveloppes</a>
+        <a class="nav-link" href="#depenses"><span class="nav-icon">＋</span>Dépenses</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="month-mini-label">Mois suivi</div>
+        <div class="month-switcher"><button id="previousMonth" aria-label="Mois précédent">‹</button><strong id="sidebarMonth">Mars 2025</strong><button id="nextMonth" aria-label="Mois suivant">›</button></div>
+        <button class="new-month-btn" id="newMonthButton"><span>＋</span> Nouveau mois</button>
+        <div class="profile"><div class="avatar">AM</div><div><strong>Alex &amp; M.</strong><small>Budget partagé</small></div><span class="more">•••</span></div>
+      </div>
+    </aside>
+
+    <main class="main-content" id="overview">
+      <header class="topbar"><div class="breadcrumb">Espace budget <span>/</span> <strong id="breadcrumbMonth">Mars 2025</strong></div><div class="top-actions"><button class="icon-btn" title="Notifications" aria-label="Notifications">♧<i></i></button><button class="outline-btn" id="exportButton">↥ Exporter</button><button class="primary-btn" id="quickExpenseButton">＋ Ajouter une dépense</button></div></header>
+
+      <section class="welcome-row"><div><p class="eyebrow">SUIVI MENSUEL <span class="live-dot"></span></p><h1>Bonjour, Alex<span class="title-dot">.</span></h1><p class="subline">Votre budget est sur la bonne voie. Voici où vous en êtes.</p></div><div class="date-card"><span>MOIS EN COURS</span><strong id="currentMonthLabel">Mars 2025</strong><small id="lastUpdated">Mis à jour à l’instant</small></div></section>
+
+      <section class="hero-grid" aria-label="Résumé du budget">
+        <article class="balance-card"><div class="card-top"><span class="eyebrow light">RESTE À VIVRE</span><span class="status-pill"><span></span> En bonne voie</span></div><div class="balance-amount" id="remainingAmount">1 030,00 €</div><p>Disponible après vos charges fixes</p><div class="balance-footer"><div><small>Revenus nets</small><strong id="netIncome">4 090,00 €</strong></div><div><small>Charges communes</small><strong id="totalCharges">2 438,00 €</strong></div><div><small>Report précédent</small><strong id="carryoverAmount">0,00 €</strong></div></div></article>
+        <article class="safety-card"><div class="card-heading"><div><span class="eyebrow">MATELAS DE SÉCURITÉ</span><h2 id="safetyAmount">1 840,00 €</h2></div><span class="shield-icon">⌂</span></div><div class="progress-track"><div class="progress-fill" id="safetyProgress"></div></div><div class="safety-meta"><span>Objectif <strong>3 000 €</strong></span><span id="safetyPercent">61 %</span></div><p>Le surplus nourriture alimente automatiquement ce matelas.</p></article>
+      </section>
+
+      <section class="section-heading" id="budgets"><div><p class="eyebrow">ALLOCATION DU RESTE À VIVRE</p><h2>Vos enveloppes</h2></div><button class="text-btn" id="editBudgetsButton">Modifier les pourcentages <span>→</span></button></section>
+      <section class="envelope-grid" id="envelopeGrid"></section>
+
+      <section class="content-grid">
+        <div class="panel" id="revenus"><div class="panel-header"><div><p class="eyebrow">ENTRÉES DU MOIS</p><h2>Revenus</h2></div><button class="small-add-btn" id="addIncomeButton">＋ Ajouter</button></div><div class="table" id="incomeTable"></div><div class="panel-total"><span>Total net estimé</span><strong id="incomeTotalBottom">4 090,00 €</strong></div></div>
+        <div class="panel" id="charges"><div class="panel-header"><div><p class="eyebrow">SORTIES RÉCURRENTES</p><h2>Charges communes</h2></div><button class="small-add-btn" id="addChargeButton">＋ Ajouter</button></div><div class="table" id="chargeTable"></div><div class="panel-total"><span>Total ce mois</span><strong id="chargesTotalBottom">2 438,00 €</strong></div></div>
+      </section>
+
+      <section class="expense-section" id="depenses"><div class="section-heading"><div><p class="eyebrow">SUIVI AU JOUR LE JOUR</p><h2>Dépenses du mois</h2></div><div class="expense-summary"><span id="expenseCount">0 dépense</span><strong id="expenseTotal">0,00 €</strong></div></div><div class="expense-list" id="expenseList"></div></section>
+      <footer><span>Clair. — votre budget, en toute simplicité.</span><span>Données stockées sur cet appareil</span></footer>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="modalClose" aria-label="Fermer">×</button><p class="eyebrow" id="modalEyebrow">NOUVELLE ENTRÉE</p><h2 id="modalTitle">Ajouter une dépense</h2><form id="modalForm"></form></div></div>
+  <script src="app.js"></script>
+</body>
+</html>
