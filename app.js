@@ -39,7 +39,7 @@ const get = id => document.getElementById(id);
 
 function render() {
   const date = new Date(`${state.month}-01T12:00:00`); const label = monthName(date);
-  ['sidebarMonth', 'breadcrumbMonth', 'currentMonthLabel'].forEach(id => get(id).textContent = label);
+  ['sidebarMonth', 'breadcrumbMonth', 'topMonthLabel'].forEach(id => get(id).textContent = label);
   get('remainingAmount').textContent = euro(individualRemaining()); get('netIncome').textContent = euro(netIncome());
   const individualCarryover = Number(state.carryover || 0) / 2 + Object.values(state.envelopeCarryover).reduce((sum, value) => sum + Number(value), 0);
   get('totalCharges').textContent = euro(totalCharges()); get('carryoverAmount').textContent = euro(individualCarryover);
