@@ -44,8 +44,6 @@ function render() {
   const individualCarryover = Number(state.carryover || 0) / 2 + Object.values(state.envelopeCarryover).reduce((sum, value) => sum + Number(value), 0);
   get('totalCharges').textContent = euro(totalCharges()); get('carryoverAmount').textContent = euro(individualCarryover);
   get('incomeTotalBottom').textContent = euro(netIncome()); get('chargesTotalBottom').textContent = euro(totalCharges());
-  get('safetyAmount').textContent = euro(state.safety); get('safetyProgress').style.width = `${Math.min(100, state.safety / 3000 * 100)}%`;
-  get('safetyPercent').textContent = `${Math.round(Math.min(100, state.safety / 3000 * 100))} %`;
   renderEnvelopes(); renderRows('incomeTable', state.incomes, 'income'); renderRows('chargeTable', state.charges, 'charge'); renderExpenses();
 }
 function renderEnvelopes() {
