@@ -25,29 +25,33 @@ const starter = {
   ], expenses: []
 };
 let state = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null') || starter;
+state.envelopeCarryover = state.envelopeCarryover || {};
 const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 const netIncome = () => state.incomes.reduce((sum, income) => sum + Number(income.amount) * (income.ei ? .7 : 1), 0);
 const totalCharges = () => state.charges.reduce((sum, charge) => sum + Number(charge.amount), 0);
 const remaining = () => netIncome() - totalCharges() + Number(state.carryover || 0);
 const individualRemaining = () => Math.max(0, remaining()) / 2;
+const categoryFor = envelope => ({ Perso: 'Dépenses personnelles', Épargne: 'Épargne', Loisirs: 'Loisirs', Tampon: 'Tampon' }[envelope.name] || envelope.name);
+const spentFor = envelope => state.expenses.filter(expense => expense.category === categoryFor(envelope)).reduce((sum, expense) => sum + Number(expense.amount), 0);
+const baseAllocationFor = envelope => individualRemaining() * envelope.percent / 100;
+const allocationFor = envelope => baseAllocationFor(envelope) + Number(state.envelopeCarryover[envelope.name] || 0);
 const get = id => document.getElementById(id);
 
 function render() {
   const date = new Date(`${state.month}-01T12:00:00`); const label = monthName(date);
   ['sidebarMonth', 'breadcrumbMonth', 'currentMonthLabel'].forEach(id => get(id).textContent = label);
   get('remainingAmount').textContent = euro(individualRemaining()); get('netIncome').textContent = euro(netIncome());
-  get('totalCharges').textContent = euro(totalCharges()); get('carryoverAmount').textContent = euro(Number(state.carryover || 0) / 2);
+  const individualCarryover = Number(state.carryover || 0) / 2 + Object.values(state.envelopeCarryover).reduce((sum, value) => sum + Number(value), 0);
+  get('totalCharges').textContent = euro(totalCharges()); get('carryoverAmount').textContent = euro(individualCarryover);
   get('incomeTotalBottom').textContent = euro(netIncome()); get('chargesTotalBottom').textContent = euro(totalCharges());
   get('safetyAmount').textContent = euro(state.safety); get('safetyProgress').style.width = `${Math.min(100, state.safety / 3000 * 100)}%`;
   get('safetyPercent').textContent = `${Math.round(Math.min(100, state.safety / 3000 * 100))} %`;
   renderEnvelopes(); renderRows('incomeTable', state.incomes, 'income'); renderRows('chargeTable', state.charges, 'charge'); renderExpenses();
 }
 function renderEnvelopes() {
-  const available = individualRemaining();
-  const categories = { Perso: 'Dépenses personnelles', Épargne: 'Épargne', Loisirs: 'Loisirs', Tampon: 'Tampon' };
   get('envelopeGrid').innerHTML = state.envelopes.map(item => {
-    const allocation = available * item.percent / 100;
-    const spent = state.expenses.filter(expense => expense.category === (categories[item.name] || item.name)).reduce((sum, expense) => sum + Number(expense.amount), 0);
+    const allocation = allocationFor(item);
+    const spent = spentFor(item);
     const progress = allocation ? spent / allocation * 100 : spent ? 100 : 0;
     return `<article class="envelope${spent > allocation ? ' over-budget' : ''}" style="--accent:${item.color}"><div class="envelope-head"><span class="envelope-icon">${item.icon}</span><span class="eyebrow">${item.percent} %</span></div><h3>${item.name}</h3><div class="envelope-amount">${euro(allocation)}</div><div class="envelope-progress" aria-label="${euro(spent)} dépensés sur ${euro(allocation)}"><div class="envelope-progress-fill" style="width:${Math.min(100, progress)}%"></div></div><div class="envelope-spent">${euro(spent)} / ${euro(allocation)} <span>dépensé</span></div><div class="envelope-meta">Budget alloué <strong>${item.percent} %</strong></div></article>`;
   }).join('');
@@ -71,7 +75,15 @@ function openModal(type, data = null) {
 }
 function nextMonthValue() { const date = new Date(`${state.month}-01T12:00:00`); date.setMonth(date.getMonth() + 1); return date.toISOString().slice(0, 7); }
 function submitModal(type, data) {
-  if (type === 'month') { const newMonth = get('monthToOpen').value; if (!newMonth) return; state.carryover = Math.max(0, remaining()); state.month = newMonth; state.expenses = []; save(); closeModal(); render(); return; }
+  if (type === 'month') {
+    const newMonth = get('monthToOpen').value;
+    if (!newMonth) return;
+    state.envelopeCarryover = Object.fromEntries(state.envelopes.map(item => [item.name, Math.max(0, allocationFor(item) - spentFor(item))]));
+    state.carryover = 0;
+    state.month = newMonth;
+    state.expenses = [];
+    save(); closeModal(); render(); return;
+  }
   if (type === 'budget') { const values = state.envelopes.map((item, index) => ({ ...item, percent: Number(get(`budget-${index}`).value) })); if (values.reduce((sum, item) => sum + item.percent, 0) !== 100) return alert('La répartition doit totaliser exactement 100 %.'); state.envelopes = values; save(); closeModal(); render(); return; }
   const item = { id: data?.id || uid(), name: get('entryName').value.trim(), amount: Number(get('entryAmount').value), type: get('entryType')?.value || 'Autre' };
   if (type === 'income') item.ei = get('entryEi')?.checked || item.type === 'EI';
