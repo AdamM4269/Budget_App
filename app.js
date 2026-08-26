@@ -1,23 +1,15 @@
-const STORAGE_KEY = 'clair-budget-v1';
+const STORAGE_KEY = 'clair-budget-v3';
 const euro = value => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(value) || 0);
 const monthName = date => new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(date).replace(/^./, char => char.toUpperCase());
 const uid = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 const starter = {
-  month: '2025-03', carryover: 0, safety: 1840, mode: 'couple',
+  month: '2025-03', carryover: 0, safety: 1840, mode: 'solo',
   incomes: [
-    { id: uid(), name: 'Esker', amount: 2300, type: 'Salaire' },
-    { id: uid(), name: 'Chorales', amount: 200, type: 'Salaire' },
-    { id: uid(), name: 'Chorales EI', amount: 300, type: 'EI', ei: true },
-    { id: uid(), name: 'HCL', amount: 1800, type: 'Salaire' }
+    { id: uid(), name: 'Salaire 1', amount: 1500, type: 'Salaire' }
   ],
   charges: [
-    { id: uid(), name: 'Crédit maison', amount: 1430, type: 'Fixe' }, { id: uid(), name: 'Taxe foncière', amount: 37.5, type: 'Fixe' },
-    { id: uid(), name: 'Assurance habitation', amount: 27.5, type: 'Fixe' }, { id: uid(), name: 'Électricité', amount: 100, type: 'Fixe' },
-    { id: uid(), name: 'Eau', amount: 30, type: 'Fixe' }, { id: uid(), name: 'Wifi', amount: 30, type: 'Fixe' },
-    { id: uid(), name: 'Spotify', amount: 13, type: 'Fixe' }, { id: uid(), name: 'VOD', amount: 50, type: 'Fixe' },
-    { id: uid(), name: 'Transports en commun', amount: 150, type: 'Fixe' }, { id: uid(), name: 'Nourriture', amount: 450, type: 'Variable' },
-    { id: uid(), name: 'Psy', amount: 120, type: 'Fixe' }
+    { id: uid(), name: 'Charge 1', amount: 600, type: 'Fixe' }
   ],
   envelopes: [
     { name: 'Épargne', percent: 40, icon: '↗', color: '#cdeee1' }, { name: 'Perso', percent: 20, icon: '♡', color: '#f5d77c' },
