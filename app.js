@@ -1,10 +1,10 @@
-const STORAGE_KEY = 'clair-budget-v3';
+const STORAGE_KEY = 'clair-budget-v4';
 const euro = value => new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(Number(value) || 0);
 const monthName = date => new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' }).format(date).replace(/^./, char => char.toUpperCase());
 const uid = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 
 const starter = {
-  month: '2025-03', carryover: 0, safety: 1840, mode: 'solo',
+  month: '2026-08', carryover: 0, safety: 1840, mode: 'solo',
   incomes: [
     { id: uid(), name: 'Salaire 1', amount: 1500, type: 'Salaire' }
   ],
@@ -54,7 +54,7 @@ function renderEnvelopes() {
   }).join('');
 }
 function renderRows(target, rows, kind) {
-  get(target).innerHTML = rows.map(row => `<div class="table-row"><span class="row-name">${row.name}</span><span class="row-tag">${row.ei ? '−30 % EI' : row.type}</span><strong class="row-amount">${euro(row.amount * (row.ei ? .7 : 1))}</strong><button class="row-action" data-edit="${kind}" data-id="${row.id}" aria-label="Modifier ${row.name}">⋮</button></div>`).join('');
+  get(target).innerHTML = rows.map(row => `<div class="table-row"><span class="row-name">${row.name}</span><span class="row-tag">${row.ei ? '−30 % EI' : row.type}</span><span class="row-value"><strong class="row-amount">${euro(row.amount * (row.ei ? .7 : 1))}</strong><button class="row-action" data-edit="${kind}" data-id="${row.id}" aria-label="Modifier ${row.name}">⋮</button></span></div>`).join('');
 }
 function renderExpenses() {
   const total = state.expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
