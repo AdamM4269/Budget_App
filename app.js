@@ -105,5 +105,25 @@ document.addEventListener('click', event => {
 get('addIncomeButton').onclick = () => openModal('income'); get('addChargeButton').onclick = () => openModal('charge'); get('quickExpenseButton').onclick = () => openModal('expense'); get('editBudgetsButton').onclick = () => openModal('budget'); get('newMonthButton').onclick = () => { closeSidebar(); openModal('month'); }; get('modalClose').onclick = closeModal; get('modalBackdrop').onclick = event => { if (event.target.id === 'modalBackdrop') closeModal(); };
 document.querySelectorAll('.mode-option').forEach(button => button.onclick = () => { state.mode = button.dataset.mode; save(); render(); });
 get('previousMonth').onclick = () => moveMonth(-1); get('nextMonth').onclick = () => moveMonth(1); get('exportButton').onclick = () => { const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `epic-sou-${state.month}.json`; link.click(); URL.revokeObjectURL(link.href); };
+get('importButton').onclick = () => get('importFile').click();
+get('importFile').onchange = event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const importedState = JSON.parse(reader.result);
+      if (!importedState || typeof importedState !== 'object' || !/^\d{4}-\d{2}$/.test(importedState.month) || !Array.isArray(importedState.incomes) || !Array.isArray(importedState.charges) || !Array.isArray(importedState.envelopes) || !Array.isArray(importedState.expenses)) throw new Error('Format invalide');
+      state = importedState;
+      state.envelopeCarryover = state.envelopeCarryover || {};
+      state.mode = state.mode === 'solo' ? 'solo' : 'couple';
+      save(); render(); alert('Sauvegarde importée avec succès.');
+    } catch (error) {
+      alert('Impossible d’importer cette sauvegarde.');
+    }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+};
 function moveMonth(delta) { const date = new Date(`${state.month}-01T12:00:00`); date.setMonth(date.getMonth() + delta); state.month = date.toISOString().slice(0, 7); save(); render(); }
 render();
