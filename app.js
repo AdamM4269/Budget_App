@@ -49,8 +49,9 @@ function renderEnvelopes() {
   get('envelopeGrid').innerHTML = state.envelopes.map(item => {
     const allocation = allocationFor(item);
     const spent = spentFor(item);
+    const remainingBudget = allocation - spent;
     const progress = allocation ? spent / allocation * 100 : spent ? 100 : 0;
-    return `<article class="envelope${spent > allocation ? ' over-budget' : ''}" style="--accent:${item.color}"><div class="envelope-head"><span class="envelope-icon">${item.icon}</span><span class="eyebrow">${item.percent} %</span></div><h3>${item.name}</h3><div class="envelope-amount">${euro(allocation)}</div><div class="envelope-progress" aria-label="${euro(spent)} dépensés sur ${euro(allocation)}"><div class="envelope-progress-fill" style="width:${Math.min(100, progress)}%"></div></div><div class="envelope-spent">${euro(spent)} / ${euro(allocation)} <span>dépensé</span></div><div class="envelope-meta">Budget alloué <strong>${item.percent} %</strong></div></article>`;
+    return `<article class="envelope${spent > allocation ? ' over-budget' : ''}" style="--accent:${item.color}"><div class="envelope-head"><span class="envelope-icon">${item.icon}</span><span class="eyebrow">${item.percent} %</span></div><h3>${item.name}</h3><div class="envelope-amount">${euro(remainingBudget)}</div><div class="envelope-progress" aria-label="${euro(spent)} dépensés sur ${euro(allocation)}"><div class="envelope-progress-fill" style="width:${Math.min(100, progress)}%"></div></div><div class="envelope-spent">${euro(spent)} / ${euro(allocation)} <span>dépensé</span></div><div class="envelope-meta">Budget alloué <strong>${item.percent} %</strong></div></article>`;
   }).join('');
 }
 function renderRows(target, rows, kind) {
